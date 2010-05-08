@@ -1,0 +1,6 @@
+name = "CTools Demonstrations"
+description = "CTools demonstration and exmaples"
+project = "ctools_demos"
+core = 6.x
+dependencies[] = ctools
+package = "CTools Demos"

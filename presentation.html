@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Insert title here</title>
+    </head>
+    <body>
+        <p>
+            I'm writing this post about the <a href="http://drupal.org/ctools">Chaos Tools</a>
+            for the presentation I am making at the <a href="http://drupal-dev-days.de">Drupal Dev Days</a>
+            on May 8th in München.
+        </p>
+        <!--break-->
+        <div id="chaos-slides" class="jquery-presentation">
+            <div class="slide">
+                <h4>What does provide by ctools?</h4>
+                Useful, well written and easy to use scripts / 
+                <acronym title="Application programming interface">
+                    API
+                </acronym>s for Drupal module development.
+            </div>
+            
+            <div class="slide">
+              <h4>The widgets and interactivity tools</h4>
+              <ul>
+                <li>AJAX responder</li>
+                <li>Dependent</li>
+                <li>Modal dialog</li>
+                <li>Wizards</li>
+                <li>Jump menu</li>
+              </ul>
+            </div>
+            
+            <div class="slide">
+                <h4>AJAX responder</h4>
+                <quote>
+                    tools to make it easier for the server to handle AJAX requests and tell the client what to do with them.
+                </quote>
+                <p>
+                    In other words, this the perfect "inline editing" solution.
+                </p>
+                <p>
+                    Imagine you can click an HTML element, the AJAX responder could determine the appropriate form element and put the form at a defined position within the page.
+                    <br/>
+                    After submiting the change, the original element would be replaced. All that without leaving the current page.
+                </p>
+                <p>
+                    Ok, this is generaly speeking one of the most standard use case. Chaos Tools just make it easier.
+                </p>
+                <p>
+                  [ctools-demos:ajax]
+                </p>
+            </div>
+            
+            <div class="slide">
+              <h4>The APIs</h4>
+              <ul>
+                <li>Forms utilities</li>
+                <li>Exportable objects</li>
+                <li>Object cache</li>
+                <li>Context</li>
+                <li>CSS tools</li>
+              </ul>
+            </div>
+            
+            <div class="slide">
+                <h4>Plugins</h4>
+                <quote>
+                    tools to make it easy for modules to let other modules implement plugins from .inc files.
+                </quote>
+                <p>
+                    You might also implement some plugins from themes, like the panels layouts and styles (this is cleary a good choice to me because it really allows to separate the information from the design - like CSS &amp; XHTML).
+                </p>
+                <p>
+                    The plugin definition can also be an ".info" file.
+                </p>
+                [ctools-demos:plugins]
+            </div>
+            <div class="slide">
+                <h4>Exportables</h4>
+                <quote>
+                    tools to make it easier for modules to have objects that live in database or live in code, such as 'default views'.
+                </quote>
+                <p>
+                    @todo find something to say about that
+                </p>
+            </div>
+            <div class="slide">
+                <h4>Form tools</h4>
+                <quote>
+                    tools to make it easier for forms to deal with AJAX.
+                </quote>
+                <p>
+                  I guess that you might found useful form "tricks" within those utilities.
+                </p>
+                <p>
+                  Example:
+                </p>
+                <pre>
+$form_id = 'ctools_demos_form_utilities';
+$form_state = array(
+  
+);
+$form = ctools_build_form($form_id);
+                </pre>
+            </div>
+            <div class="slide">
+                <h4>Object caching</h4>
+                <quote>
+                    tool to make it easier to edit an object across multiple page requests and cache the editing work.
+                </quote>
+                <p>
+                    Even better, this API provides methods to lock an editing state to prevent other users editing conflicts.
+                </p>
+                <p>
+                    [ctools-demos:object-cache]
+                </p>
+            </div>
+            
+            <div class="slide">
+                <h4>Modal dialog</h4>
+                <quote>
+                    tool to make it simple to put a form in a modal dialog.
+                </quote>
+                <p>
+                    [ctools-demos:modal]
+                </p>
+            </div>
+            <div class="slide">
+                <h4>Dependent</h4>
+                <quote>
+                    a simple form widget to make form items appear and disappear based upon the selections in another item.
+                </quote>
+                <p>
+                    [ctools-demos:dependent]
+                </p>
+            </div>
+            <div class="slide">
+                <h4>Content</h4>
+                <quote>
+                    pluggable content types used as panes in Panels and other modules like Dashboard.
+                </quote>
+            </div>
+            <div class="slide">
+                <h4>Form wizard</h4>
+                <quote>
+                    an API to make multi-step forms much easier.
+                </quote>
+                <p>
+                    [ctools-demos:wizards]
+                </p>
+            </div>
+            <div class="slide">
+                <h4>CSS tools</h4>
+                <quote>
+                    tools to cache and sanitize CSS easily to make user-input CSS safe.
+                </quote>
+                <p>
+                    [ctools-demos:css]
+                </p>
+            </div>
+
+            <div class="slide">
+                <h4>Some Modules who are take advantage of the tools</h4>
+                <ul>
+                  <li>CCK</li>
+                  <li>Views</li>
+                  <li>Panels</li>
+                  <li>Features</li>
+                  <li>Feeds</li>
+                  <li>Data</li>
+                  <li>Linodef</li>
+                  <li>Persistent URL (purl)</li>
+                  <li>Spaces</li>
+                  <li>Vertical Tabs</li>
+                  <li>...</li>
+                </ul>
+                <p>I guess you recognize somes of them ;)</p>
+            </div>
+
+            <div class="slide">
+                <h4>Zusammenfassung <small>I ♥ that word...</small></h4>
+                
+                <p>CTools is the perfect library/framework to create advanced editing forms/UIs.</p>
+                <p>It is also very helpful for module aimed to edit and share complex configurations.</p>
+                <p>The context approach is really relevant/flexible when dealing with complex site workflows/structures.</p>
+                <p>The plugins system is an amazing way to make the extent the possibilities of a module.<br/>(also interesting who prefers OOP)</p>
+            </div>
+
+            <div class="slide">
+                <h4>Thanks to</h4>
+                <small>
+                    in a random order...
+                </small>
+                <ul>
+                    <li>
+                        <a href="http://wikipedia.org/wiki/Tim_Berners-Lee">Tim Berners Lee</a>
+                    </li>
+                    <li>
+                        <a href="http://wikipedia.org/wiki/Linus_Torvalds">Linus Torvalds</a>
+                    </li>
+                    <li>
+                        All the passionate developers contributing to improve the projects they love by sharing their code and organizing events like Drupal Dev Days.
+                    </li>
+                    <li>
+                        <a href="http://k-fehin.net">k-fehin</a>
+                    </li>
+                </ul>
+                <p>
+                  Feedback very much welcome! @zeropaper
+                </p>
+            </div>
+            <div class="slide">
+                <h4>And finally, just as a footnote...</h4>
+                <a href="http://reset.to" title="RESET"><img src="http://reset.to/files/banner/reset_banner02.gif" alt="RESET - Umwelt, Humanität, Nachhaltigkeit, Spenden, Helfen" style="border: medium none ;"></a>
+                <br/>
+                (and the best? it's a Drupal website...)
+            </div>
+        </div>
+    </body>
+</html>

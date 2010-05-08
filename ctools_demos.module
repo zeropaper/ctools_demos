@@ -1,0 +1,175 @@
+<?php
+/**
+ * Fetch metadata on a specific demo plugin.
+ *
+ * @param $demo
+ *   Name of a panel content type.
+ *
+ * @return
+ *   An array with information about the requested panel content type.
+ */
+function ctools_demos_get_demo($demo) {
+  ctools_include('plugins');
+  return ctools_get_plugins('ctools_demos', 'demos', $demo);
+}
+
+/**
+ * Fetch metadata for all demo plugins.
+ *
+ * @return
+ *   An array of arrays with information about all available panel content types.
+ */
+function ctools_demos_get_demos() {
+  ctools_include('plugins');
+  return ctools_get_plugins('ctools_demos', 'demos');
+}
+
+/**
+ * Tell CTools where your plugins are
+ * @param string $module
+ *  The plugin module (for content_types, it would be ctools, for layouts it would be panels, and so on..)
+ * @param string $plugin
+ *  The machine name of the plugin (layouts, styles, content_types, whatever..)
+ */
+function ctools_demos_ctools_plugin_directory($module, $plugin) {
+  // Probably not a "best practice"...
+  return 'plugins/'. $module .'/'. $plugin;
+}
+
+/**
+ * Inform CTools that the demo plugin can be loaded from themes.
+ */
+function ctools_demos_ctools_plugin_demos() {
+  return array(
+    'load themes' => TRUE,
+    'defaults'    => array(
+      'category' => t('Widgets'),
+    ),
+  );
+}
+
+
+/**
+ * Implement hook_menu()
+ */
+function ctools_demos_menu() {
+  $items = array();
+  
+  $items['ctools-demos'] = array(
+    'title'             => 'CTools demonstrations',
+    'page callback'     => 'ctools_demos_overview',
+    'access arguments'  => array('access content'),
+    'type'              => MENU_SUGGESTED_ITEM,
+  );
+  
+  $items['ctools-demos/%ctools_demos_demo'] = array(
+    'title'             => 'CTools demonstrations',
+    'page callback'     => 'ctools_demos_page',
+    'page arguments'    => array(1),
+    'title callback'    => 'ctools_demos_page_title',
+    'title arguments'   => array(1),
+    'access arguments'  => array('access content'),
+    'type'              => MENU_SUGGESTED_ITEM,
+  );
+  
+  foreach (ctools_demos_get_demos('demos') as $plugin) {
+    if($function = ctools_plugin_get_function($plugin, 'hook menu')) {
+      // passing the plugin is a good idea, that way, you might use the
+      // plugin information (the "page" key) in your hook definition
+      // see ajax.inc
+      $items = array_merge($items, (array)$function($plugin));
+    }
+  }
+  
+  return $items;
+}
+
+function ctools_demos_demo_load($name) {
+  return ctools_demos_get_demo(str_replace('-', '_', $name));
+}
+
+function ctools_demos_overview() {
+  $output = '';
+  
+  $categories = array();
+  
+  foreach (ctools_demos_get_demos() as $plugin) {
+    $title = isset($plugin['title']) ? $plugin['title'] : ucfirst(str_replace('_', ' ', $plugin['name']));
+    $description = $plugin['description'] ? $plugin['description'] : highlight_string('<?php '. var_export($plugin, TRUE) .' ?>', TRUE);
+    
+    $categories[$plugin['category']] ? $categories[$plugin['category']] : '';
+    $categories[$plugin['category']] .= '<dt>'. l($title, 'ctools-demos/'. str_replace('_', '-', $plugin['name'])) .'</dt>';
+    $categories[$plugin['category']] .= '<dd>'. $description .'</dd>';
+  }
+  
+  foreach ($categories as $name => $content) {
+    $output .= '<dt>'. $name .'</dt><dd><dl>'. $content .'</dl></dd>';
+  }
+  
+  return '<dl>'. $output .'</dl>';
+}
+
+function ctools_demos_page($plugin) {
+  ctools_include('jump-menu');
+  $select = array(
+    url('ctools-demos') => t('Overview'),
+  );
+  $options = array(
+    'title' => t('Demos'),
+    'default_value' => url('ctools-demos/'. $plugin['name']),
+    'description' => t('This is the demos menu.') .' @see ctools_jump_menu',
+  );
+  foreach (ctools_demos_get_demos() as $p) {
+    $select[url('ctools-demos/'. $p['name'])] = $p['name'];
+  }
+  
+  
+  if($function = ctools_plugin_get_function($plugin, 'page callback')) {
+    return drupal_get_form('ctools_jump_menu', $select, $options) . $function($plugin);
+  }
+  
+  
+  $function = $plugin['module'] .'_'. $plugin['name'] .'_'. $plugin['plugin module'] .'_'. $plugin['plugin type'] .'_render';
+  if (function_exists($function)) {
+    return drupal_get_form('ctools_jump_menu', $select, $options) . $function($plugin);
+  }
+  
+  
+  return drupal_get_form('ctools_jump_menu', $select, $options) . highlight_string('<?php '. var_export($plugin, TRUE) .' ?>', TRUE);
+}
+
+function ctools_demos_page_title($plugin) {
+  return t('Ctools demos: @name', array('@name' => $plugin['name']));
+}
+
+/**
+ * Implements hook_filter()
+ * Just a small filter to create links to a demonstration page.
+ */
+function ctools_demos_filter($op, $delta = 0, $format = -1, $text = '', $cache_id = 0) {
+  switch ($op) {
+    case 'list':
+      return array(0 => t('CTools Demos filter'));
+
+    case 'description':
+      return t('Allows to easily create links to a CTools demonstration page.');
+
+    case "process":
+      $text = preg_replace('/\[ctools-demos:([a-zA-Z0-9-]+)\]/', '<a href="'. url('ctools-demos') .'/$1" class="ctools-demos-link">CTools $1 '. t('demonstration page') .'</a>', $text);
+      return $text;
+
+    default:
+      return $text;
+  }
+}
+
+function ctools_demos_highlight($code, $lang = 'drupal6') {
+  
+  module_load_include('module', 'geshifilter');
+  module_load_include('pages.inc', 'geshifilter');
+  if (function_exists('geshifilter_process')) {
+    return geshifilter_process($code, $lang);
+  }
+  
+  return '<pre>'. $code .'</pre>';
+}
